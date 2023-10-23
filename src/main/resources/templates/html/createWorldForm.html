@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create World</title>
+  <!-- Font Awesome -->
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+          rel="stylesheet"
+  />
+  <!-- Google Fonts -->
+  <link
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          rel="stylesheet"
+  />
+  <!-- MDB -->
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css"
+          rel="stylesheet"
+  />
+
+  <link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+  <link rel="shortcut icon" type="image/png" href="/image/logo_MultiWorld.png"/>
+
+  <link href="/css/createWorldForm.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<section >
+  <div class="container py-5">
+    <div class="row">
+      <div class="col">
+        <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create World</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+    <form>
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="card mb-2">
+            <div class="card-body text-center">
+              <img src="/world_image/world_image.png" alt=""
+                   class="world-img img-fluid" id="imageShow">
+              <h5 class="my-3"></h5>
+              <div class="d-flex justify-content-center">
+                <div class="btn btn-info mt-3" style="font-size: 15px">
+                  <label class="form-label text-white m-1" for="uploadWorldImage">Choose Image</label>
+                  <input type="file" class="form-control d-none" id="uploadWorldImage" onchange="chooseFile(this)"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8">
+          <div class="card">
+            <div class="card-body">
+              <div class="form-outline mb-4">
+                <input type="text" id="name" class="form-control" name="worldName"/>
+                <label class="form-label " for="name">Name</label>
+              </div>
+
+              <div class="form-outline mb-4">
+                <textarea class="form-control" id="fantasy" rows="5"></textarea>
+                <label class="form-label" for="fantasy">Fantasy</label>
+              </div>
+              <p id="message"></p>
+              <!-- Submit button -->
+              <div class="text-center">
+                <button onclick="createWorld()" class="btn btn-info">Confirm</button>
+              </div>
+              <div id="direct-button">
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"
+></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="/js/showFileUpload.js">
+
+</script>
+
+
+
+<script>
+
+  let currentUsername = localStorage.getItem("token");
+
+  function createWorld(){
+    this.event.preventDefault();
+    let world = {};
+    world.name = $("#name").val();
+    if (world.name === ''){
+      $('#name')[0].classList.add('is-invalid')
+      document.getElementById("message").innerHTML ='<p style="color: red">' + "Name must be filled out" +'</p>';
+      $('#message')[0].classList.remove("fade");
+      return;
+    }else {
+      $('#name')[0].classList.remove('is-invalid')
+    }
+    world.fantasy = $("#fantasy").val();
+
+
+    world.username = currentUsername;
+
+    // Xử lý lưu hình ảnh
+    let worldImage = $('#uploadWorldImage')[0].files[0]
+    if (worldImage === undefined){
+      worldImage = null;
+    }
+    let formData = new FormData();
+    formData.append('world', new Blob([JSON.stringify(world)], {
+      type: "application/json"
+    }))
+    formData.append("worldImage", worldImage);
+    $.ajax({
+        type: "POST",
+        url: "http://localhost:8080/api/world/create",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response){
+          document.getElementById("message").innerHTML ='<p style="color: green">' + response +'</p>';
+          $('#message')[0].classList.remove("fade");
+
+          setButtonAfterCreateSuccess()
+
+          setTimeout(()=>{
+            $('#message')[0].classList.add("fade");
+          },2000)
+        },
+      error: function (jqXHR){
+        document.getElementById("message").innerHTML = '<p style="color: red">' +  jqXHR.responseText + '</p>'
+        $('#message')[0].classList.remove("fade");
+
+        setTimeout(()=>{
+          $('#message')[0].classList.add("fade");
+        },2000)
+      }
+      })
+  }
+
+  function setButtonAfterCreateSuccess(){
+    $('#direct-button')[0].innerHTML = '' +
+            '<hr class="hr mt-5">' +
+            '<div class="d-flex justify-content-around" >'+
+            '<button type="button" class="btn btn-outline-success" id="homepage-button">Homepage</button>'+
+            '<button type="button" class="btn btn-outline-success" id="showWorld-button">Show World</button>' +
+            '</div>'
+    $('#homepage-button').attr('onclick',"location.href='/home'")
+    $('#showWorld-button').attr('onclick',"location.href='/world/show/'")
+  }
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+body{
+    font-family: "Tektur",sans-serif;
+}
+
+.nav1{
+    margin-top: -10px;
+    padding-top: 10px;
+    padding-bottom: 0;
+    margin-bottom: 10px;
+}
+.titleincard{
+    font-weight: 600
+}
+.card-title{
+    font-size: 19px;
+    font-weight: 600
+}
+.card-text{
+    font-size: 15px;
+}
+.card-footer{
+    font-size: 15px;
+}
+
+.world-img{
+    border: 7px solid #ffffff;
+    box-shadow: 2px 2px 10px #919191;
+    height: 141px;
+    width: 237px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 20px;
+}
+
+.rounded-circle{
+    width: 120px;
+    height: 120px;
+    border: 7px solid #ffffff;
+    box-shadow: 2px 2px 6px #939393;
+    object-fit: cover;
+}
+
+#no-result-announce{
+    position: relative;
+    top: 30%;
+    font-size: 30px;
+    font-weight: 500;
+}
+
+#btn-back-to-top{
+    position: fixed;
+    right: 20px;
+    bottom: 40px;
+    width: 55px;
+    height: 55px;
+    display: none;
+}
+
+.search-input, .search-input:not(:focus){
+    width: 100%;
+    outline: none;
+    border: 2px solid #c4c4c44a;
+    height: 35px;
+    text-align: center;
+    transition-duration: 0.5s;
+}
+
+
+.search-input:focus, input:hover {
+    outline: none;
+    border-color: #9ddeff96;
+    background-color: #fff;
+    box-shadow: 0 0 11px 7px rgb(110 204 255 / 30%);
+    transition-duration: 0.5s;
+}
+
+
+/*Chọn thuộc tính search*/
+.radio-inputs {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 0.5rem;
+    background-color: #2098e8a6;
+    box-sizing: border-box;
+    box-shadow: 0 4px 7px 1px rgb(120 120 120 / 21%);
+    padding: 0.25rem;
+    width: 150px;
+    font-size: 14px;
+    flex-direction: column
+}
+
+.radio-inputs .radio {
+    flex: 1 1 auto;
+    text-align: center;
+}
+
+.radio-inputs .radio input {
+    display: none;
+}
+
+
+.radio-inputs .radio .name {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    border: none;
+    padding: .5rem 0;
+    color: rgb(255, 255, 255);
+    transition: all .15s ease-in-out;
+}
+
+.radio-inputs .radio input:checked + .name {
+    background-color: #fff;
+    font-weight: 600;
+    transition-duration: 0.5s;
+    color: #4b4b4b;
+}
+

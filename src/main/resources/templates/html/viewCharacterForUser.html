@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>View Word</title>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css"
+            rel="stylesheet"
+    />
+
+    <link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+
+    <link rel="shortcut icon" type="image/png" href="/image/logo_MultiWorld.png"/>
+
+    <link href="/css/viewCharacterForUser.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<section>
+    <div class="container py-5">
+        <div class="row">
+            <div class="col">
+                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+                    <ol class="breadcrumb mb-0" id="breadcrumb">
+
+
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4" id="characterInfo">
+
+
+            </div>
+            <div class="col-lg-8" id="characterFantasy">
+
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<button
+        type="button"
+        class="btn btn-info btn-floating btn-lg"
+        id="btn-back-to-top"
+>
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"
+></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="/js/scrollTop.js"></script>
+
+
+<!--Xử lý tác vụ khi mở trang-->
+<script>
+    $(document).ready(function () {
+        getCharacterInfo(characterId)
+    });
+
+    let worldId = [[${worldId}]]
+    let characterId = [[${characterId}]];
+    let currentUsername = localStorage.getItem("token");
+</script>
+
+
+<!--Xử lý xem Character-->
+<script>
+    function getCharacterInfo(characterId) {
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/api/character/view/" + characterId,
+            success: function (character) {
+                showCharacterInfo(character)
+                setBreadcrumb(character);
+            }
+        })
+    }
+
+
+    function showCharacterInfo(character) {
+        $('#characterInfo')[0].innerHTML = setCharacterInfo(character);
+        $('#characterFantasy')[0].innerHTML = setCharacterStory(character);
+    }
+
+    function setCharacterInfo(character) {
+        let content = `<div class="card mb-4 sticky-top" style="top: 10%">
+      <div class="card-body text-center ">
+        <img src="/character_image/${character.image}" alt=""
+             class="rounded-circle img-fluid" id="worldImageShow">
+          <h3 class="mt-3 mb-0" style="font-weight: 700">${character.name}</h3>
+          <div class="d-flex justify-content-center align-items-center">
+            <table class="text-secondary">
+              <tr>
+                <td class="row-title">Age</td>
+                <td class="row-content">${character.age}</td>
+              </tr>
+              <tr>
+                <td class="row-title">Gender</td>
+                <td class="row-content">${character.gender}</td>
+              </tr>
+              <tr>
+                <td class="row-title">Role</td>
+                <td class="row-content">${character.role}</td>
+              </tr>
+              <tr>
+                <td class="row-title">Ability</td>
+                <td class="row-content">${character.ability}</td>
+              </tr>
+            </table>
+          </div>`
+
+                if(character.world.user.username === currentUsername){
+                  content += `<button onClick="location.href='/character/show/${worldId}/update/${characterId}'"
+                  class="btn btn-success mx-5 mt-4 mini-button">Update Character
+          </button>`
+                }
+                content += `</div>
+                            </div>`
+      return content;
+    }
+
+    function setCharacterStory(character) {
+        return `<div class="card">
+      <div class="card-body">
+        <p class="titleincard">Story</p>
+        <p>
+          ${character.story}
+        </p>
+      </div>
+    </div>`
+    }
+</script>
+
+
+<!--Xử lý breadcrumb-->
+<script>
+
+    function setBreadcrumb(character) {
+        let breadcrumbForCurrentUser = `<li class="breadcrumb-item" ><a href="/home">Home</a></li>
+            <li class="breadcrumb-item" ><a href="/world/show">Show World</a></li>
+            <li class="breadcrumb-item" ><a href="/world/show/view/${worldId}">View World</a></li>
+            <li class="breadcrumb-item" ><a  href="/character/show/${worldId}">Show Character</a></li>
+            <li class="breadcrumb-item active" aria-current="page">View Character</li>`
+
+        let breadcrumbForOtherUser = `
+    <li class="breadcrumb-item" ><a href="/home">Home</a></li>
+    <li class="breadcrumb-item"><a href="/user/profile/${character.world.user.id}">Wibu's Profile</a></li>
+            <li class="breadcrumb-item"><a href="/world/show/view/${worldId}">View World</a></li>
+            <li class="breadcrumb-item" ><a href="/character/show/${worldId}">Show Character</a></li>
+            <li class="breadcrumb-item active" aria-current="page">View Character</li>
+    `
+        if (character.world.user.username === currentUsername) {
+            $('#breadcrumb')[0].innerHTML = breadcrumbForCurrentUser;
+        } else {
+            $('#breadcrumb')[0].innerHTML = breadcrumbForOtherUser;
+        }
+    }
+
+</script>
+</body>
+</html>

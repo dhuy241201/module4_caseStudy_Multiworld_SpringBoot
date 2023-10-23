@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Search</title>
+
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css"
+            rel="stylesheet"
+    />
+
+    <link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+
+    <link rel="shortcut icon" type="image/png" href="/image/logo_MultiWorld.png"/>
+
+    <link href="/css/search.css" rel="stylesheet" type="text/css">
+
+</head>
+<body>
+
+<!-- Image and text -->
+<div class="sticky-top ">
+    <nav class="navbar navbar-light bg-light align-items-center nav1 align-items-center ">
+        <div class="container-fluid nav1">
+            <div class="col-4">
+                <a class="navbar-brand" href="/home" style="width: 220px;">
+                    <img
+                            style="height: 50px"
+                            src="/image/MutiWorld_ngang.png"
+                            class="me-2"
+                            height="20"
+                            alt="MultiWorld Logo"
+                            loading="lazy"
+                    />
+                </a>
+            </div>
+            <form class="d-flex input-group w-25 col-4 align-items-center">
+                <input
+                        type="search"
+                        class="search-input"
+                        placeholder="Search"
+                        aria-label="Search"
+                        aria-describedby="search-addon"
+                        style="border-radius: 20px;"
+                />
+                <span class="input-group-text border-0" id="search-addon">
+        <i class="fas fa-search fa-lg" ></i>
+      </span>
+            </form>
+
+            <div class="dropdown col-4 d-flex">
+
+            </div>
+        </div>
+        <!-- Right elements -->
+    </nav>
+</div>
+
+<div class="row mt-5">
+    <div class="col-2">
+        <div class="sticky-top justify-content-center d-flex" style="top: 30%;">
+            <div class="radio-inputs">
+                <label class="radio">
+                    <input type="radio" name="radio" id="world-check">
+                    <span class="name" data-object = "world" style="font-size: 16px" onclick="searchByClick(this)"><span class="fa-solid fa-globe"></span>&nbsp;&nbsp;World</span>
+                </label>
+                <label class="radio">
+                    <input type="radio" name="radio" id="character-check">
+                    <span class="name" data-object = "character" style="font-size: 16px" onclick="searchByClick(this)"><span class="fas fa-user-large"></span>&nbsp;&nbsp;Character</span>
+                </label>
+                <label class="radio">
+                    <input type="radio" name="radio" id="user-check">
+                    <span class="name" data-object = "user" style="font-size: 16px" onclick="searchByClick(this)"><span class="fas fa-address-card"></span>&nbsp;&nbsp;User</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="col-10 row">
+        <div id="search-result">
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<div class="container col-8">
+    <div class="row justify-content-center" id="worldList">
+    </div>
+</div>
+
+
+<button
+        type="button"
+        class="btn btn-info btn-floating btn-lg"
+        id="btn-back-to-top"
+>
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+
+<!-- MDB -->
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"
+></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="/js/scrollTop.js"></script>
+
+
+<!--Xử lý chương trình khi load page-->
+<script>
+
+    $(document).ready(function () {
+        let keyword = "[[${keyword}]]"
+        $('.search-input').val(keyword);
+        deleteChecked();
+        search(0)
+    });
+    let currentSearchObject = "[[${object}]]"
+    let currentUsername = localStorage.getItem("token");
+    let isDataRemain = true;
+</script>
+
+
+<!--Xử lý xóa check cho bảng chọn object-->
+<script>
+    function deleteChecked(){
+        let targets = document.getElementsByName("radio");
+        for (let i=0; i < targets.length; i++){
+            targets[i].removeAttribute("checked");
+        }
+    }
+
+
+
+</script>
+
+
+
+
+<!--Xử lý trường hợp không có kết quả-->
+<script>
+    let noResultReply = `<p class="text-center text-danger" id="no-result-announce"><span class="fas fa-magnifying-glass"></span>
+                         There are no matching result, please check your key word</p>`
+
+    function setNoResult() {
+        let content = noResultReply
+        $('#search-result')[0].innerHTML = content;
+    }
+</script>
+
+
+<!--Xử lý search World-->
+<script>
+
+    function searchWord(page) {
+        let keyword = $('.search-input').val();
+        $('#world-check')[0].setAttribute("checked","");
+        currentSearchObject = "world"
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/api/world/search?keyword=" + keyword + "&page=" + page,
+            success: function (pageWorld) {
+                if (pageWorld.numberOfElements === 0) {
+                    setNoResult();
+                    window.history.pushState("", "", "http://localhost:8080/search/world?keyword=" + keyword);
+                } else {
+                    getWorldInfo(pageWorld);
+                    window.history.pushState("", "", "http://localhost:8080/search/world?keyword=" + keyword);
+                }
+            }
+        })
+    }
+
+    function getWorldInfo(pageWorld) {
+        if ((pageWorld.totalElements - (pageWorld.number + 1) * pageWorld.size) > 0) {
+            isDataRemain = true;
+        } else {
+            isDataRemain = false;
+        }
+        let list = pageWorld.content;
+        let searchResultTarget = $('#search-result');
+        let content = searchResultTarget[0].innerHTML;
+        if (content === undefined || content == noResultReply || pageWorld.number == 0) {
+            content = ``
+        }
+
+        for (let i = 0; i < list.length; i++) {
+            content += setWorldInfo(list[i]);
+        }
+        searchResultTarget[0].innerHTML = content;
+    }
+
+    function setWorldInfo(world) {
+        let author = `${world.user.username}`;
+        let content = ``;
+        content += `<div class="col-lg-11 mb-5">
+                <div class="card">
+                    <div class="card-body row d-flex justify-content-center align-items-center">
+                        <div class="text-center col-3">
+                            <img src="/world_image/${world.image}" alt=""
+                                 class="world-img img-fluid">
+                            <br>
+                        </div>
+                        <div class="col-5">
+                            <h4 class="card-title mb-2">${world.name}</h4>
+                            <p class="card-text">
+                                ${world.user.name}
+                            </p>
+                        </div>`;
+
+        if (author === currentUsername) {
+            content += `<div class="col-4">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <button class="btn btn-info mx-1" onclick="location.href='/world/show/view/${world.id}'">View</button>
+                                <button class="btn btn-success mx-1" onclick="location.href='/world/show/update/${world.id}'">Update</button>
+                                <button class="btn btn-danger mx-1" data-mdb-toggle="modal" data-mdb-target="#confirmDelete" data-world-id = "${world.id}">Obliterate</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="hr mb-5" style="height: 2.5px;">
+        `
+        } else {
+            content += `<div class="col-4">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <button class="btn btn-info mx-1" onclick="location.href='/world/show/view/${world.id}'">View</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="hr mb-5" style="height: 2.5px;">
+        `
+        }
+
+        return content;
+    }
+</script>
+
+
+<!--Xử lý search Character-->
+<script>
+
+    function searchCharacter(page) {
+        let keyword = $('.search-input').val();
+        $('#character-check')[0].setAttribute("checked","");
+        currentSearchObject = "character"
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/api/character/search?keyword=" + keyword + "&page=" + page,
+            success: function (pageCharacter) {
+                if (pageCharacter.numberOfElements === 0) {
+                    setNoResult();
+                    window.history.pushState("", "", "http://localhost:8080/search/character?keyword=" + keyword);
+                } else {
+                    getCharacterInfo(pageCharacter);
+                    window.history.pushState("", "", "http://localhost:8080/search/character?keyword=" + keyword);
+                }
+            }
+        })
+    }
+
+    function getCharacterInfo(pageCharacter) {
+        if ((pageCharacter.totalElements - (pageCharacter.number + 1) * pageCharacter.size) > 0) {
+            isDataRemain = true;
+        } else {
+            isDataRemain = false;
+        }
+        let list = pageCharacter.content;
+        let searchResultTarget = $('#search-result');
+        let content = searchResultTarget[0].innerHTML;
+        if (content === undefined || content == noResultReply || pageCharacter.number == 0) {
+            content = ``
+        }
+
+        for (let i = 0; i < list.length; i++) {
+            content += setCharacterInfo(list[i]);
+        }
+        searchResultTarget[0].innerHTML = content;
+    }
+
+    function setCharacterInfo(character) {
+        let author = `${character.world.user.username}`;
+        let content = ``;
+        content += `<div class="search-result">
+      <div class="col-lg-11 mb-5">
+        <div class="card">
+          <div class="card-body row d-flex justify-content-center align-items-center">
+            <div class="col-2">
+              <img src="/character_image/${character.image}"
+                   alt="avatar"
+                   class="rounded-circle img-fluid"
+              >
+            </div>
+            <div class="col-6">
+              <h4 class="card-title mb-1">${character.name}</h4>
+              <div style="margin-left: 2%;" class="text-muted">
+                <p class="card-text"  style="margin-bottom: 0">
+                  <span class="titleincard">Age: </span>
+                  ${character.age}
+                </p>
+                <p class="card-text" style="margin-bottom: 0">
+                  <span class="titleincard">Gender: </span>
+                  ${character.gender}
+                </p>
+                <p class="card-text" style="margin-bottom: 0">
+                  <span class="titleincard">Role: </span>
+                  ${character.role}
+                </p>
+                <p class="card-text">
+                  <span class="titleincard text-primary"><a href="/world/show/view/${character.world.id}">World: </a></span>
+                  ${character.world.name}
+                </p>
+              </div>
+            </div>`;
+
+        if (author === currentUsername) {
+            content += `<div class="col-4">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <button class="btn btn-info mx-1" onclick="location.href='/character/show/${character.world.id}/view/${character.id}'">View</button>
+                                <button class="btn btn-success mx-1" onclick="location.href='/character/show/${character.world.id}/update/${character.id}'">Update</button>
+                                <button class="btn btn-danger mx-1" data-mdb-toggle="modal" data-mdb-target="#confirmDelete" data-world-id = "${character.id}">Obliterate</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="hr mb-5" style="height: 2.5px;">
+        `
+        } else {
+            content += `<div class="col-4">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <button class="btn btn-info mx-1" onclick="location.href='/character/show/${character.world.id}/view/${character.id}'">View</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="hr mb-5" style="height: 2.5px;">
+        `
+        }
+
+        return content;
+    }
+</script>
+
+
+<!--Xử lý search User-->
+<script>
+    function searchUser(page) {
+        let keyword = $('.search-input').val();
+        $('#user-check')[0].setAttribute("checked","");
+        currentSearchObject = "user"
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/api/user/search?keyword=" + keyword + "&page=" + page,
+            success: function (pageUser) {
+                if (pageUser.numberOfElements === 0) {
+                    setNoResult();
+                    window.history.pushState("", "", "http://localhost:8080/search/user?keyword=" + keyword);
+                } else {
+                    getUserInfo(pageUser);
+                    window.history.pushState("", "", "http://localhost:8080/search/user?keyword=" + keyword);
+                }
+            }
+        })
+    }
+
+    function getUserInfo(pageUser) {
+        if ((pageUser.totalElements - (pageUser.number + 1) * pageUser.size) > 0) {
+            isDataRemain = true;
+        } else {
+            isDataRemain = false;
+        }
+        let list = pageUser.content;
+
+        for (let i=0; i<list.length; i++){
+            if (list[i].username === currentUsername){
+                // currentUser = list.slice(i,2);
+                currentUser = list.find(userr => {
+                    return userr.id === list[i].id
+                })
+                list.splice(i,1)
+                list.unshift(currentUser)
+                break;
+            }
+        }
+
+
+
+        let searchResultTarget = $('#search-result');
+        let content = searchResultTarget[0].innerHTML;
+        if (content === undefined || content == noResultReply || pageUser.number == 0) {
+            content = ``
+        }
+
+        for (let i = 0; i < list.length; i++) {
+            content += setUserInfo(list[i]);
+        }
+        searchResultTarget[0].innerHTML = content;
+    }
+
+    function setUserInfo(user) {
+        let author = `${user.username}`;
+        let content = ``;
+        content += `<div class="search-result">
+      <div class="col-lg-11 mb-5">
+        <div class="card">
+          <div class="card-body row d-flex justify-content-center align-items-center">
+            <div class="col-2">
+              <img src="/avatar/${user.avatar}"
+                   alt="avatar"
+                   class="rounded-circle img-fluid"
+              >
+            </div>
+            <div class="col-6">
+              <h4 class="card-title mb-1">${user.name}</h4>
+              <div style="margin-left: 2%;" class="text-muted">
+                <p class="card-text"  style="margin-bottom: 0">
+                  <span class="titleincard">Role: </span>
+                  ${user.role}
+                </p>
+              </div>
+            </div>`;
+
+        if (author === currentUsername) {
+            content += `<div class="col-4">
+              <div class="d-flex justify-content-center align-items-center">
+                <button class="btn btn-success mx-1" onclick="location.href='/user/profile'">View Personal Profile</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="hr mb-5" style="height: 2.5px;">
+        `
+        } else {
+            content += `<div class="col-4">
+              <div class="d-flex justify-content-center align-items-center">
+                <button class="btn btn-info mx-1" onclick="location.href='/user/profile/${user.id}'">View</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr class="hr mb-5" style="height: 2.5px;">
+        `
+        }
+
+        return content;
+    }
+</script>
+
+
+
+
+
+
+<!--Xử lý call search bằng lăn chuột-->
+<script>
+    let pageCount = 0;
+    $(window).bind('mousewheel', function(event) {
+
+        if (event.originalEvent.wheelDelta < 0) {
+            if (isDataRemain){
+                findByScroll()
+            }
+        }
+    });
+
+
+
+    function findByScroll() {
+
+        if (
+            document.body.scrollTop + 20 > document.body.scrollHeight - 1000 ||
+            document.documentElement.scrollTop + 20 > document.documentElement.scrollHeight - 1000
+        ) {
+            console.log(isDataRemain)
+            console.log(document.documentElement.scrollTop)
+            console.log(document.documentElement.scrollHeight)
+            search(++pageCount)
+        }
+    }
+
+
+</script>
+
+<!--Xử lý search bằng click thanh đối tượng-->
+<script>
+    function searchByClick(element){
+        let object = $(element).data('object');
+        pageCount = 0;
+        window.scrollTo(0, 0);
+        switch (object){
+            case 'user':
+                searchUser(0)
+                break;
+            case 'character':
+                searchCharacter(0)
+                break;
+            case 'world':
+                searchWord(0)
+                break;
+        }
+    }
+
+
+</script>
+
+
+<!--Xử lý search-->
+<script>
+
+    function search(page) {
+        if (currentSearchObject === "user") {
+            searchUser(page)
+        } else if (currentSearchObject === "character") {
+            searchCharacter(page)
+        } else {
+            searchWord(page)
+        }
+    }
+
+
+    //Xử lý search bằng Enter
+    let enter = $('.search-input')
+    enter[0].addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                pageCount = 0;
+                window.scrollTo(0, 0);
+                search(0)
+            }
+        }
+    )
+
+    //Xử lý search bằng nút kính lúp
+    $('#search-addon').on('click', function (){
+        pageCount = 0;
+        window.scrollTo(0, 0);
+        search(0)
+    })
+
+    window.onload
+</script>
+</body>
+</html>
+

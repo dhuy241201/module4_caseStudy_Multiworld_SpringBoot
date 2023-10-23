@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Character</title>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css"
+            rel="stylesheet"
+    />
+
+    <link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+
+    <link rel="shortcut icon" type="image/png" href="/image/logo_MultiWorld.png"/>
+
+    <link href="/css/createCharacterForm.css" rel="stylesheet" type="text/css">
+</head>
+<body style="background-color: #efefef;">
+<section>
+    <div class="container py-5">
+        <div class="row">
+            <div class="col">
+                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item" style="color: #54b4d3"><a href="/home">Home</a></li>
+                        <li class="breadcrumb-item" style="color: #54b4d3"><a href="/world/show">Show World</a></li>
+                        <li class="breadcrumb-item" style="color: #54b4d3"><a href="/home" id="breadcrumb-viewWorld">View World</a></li>
+                        <li class="breadcrumb-item" style="color: #54b4d3"><a href="/home" id="breadcrumb-showCharacter">Show Character</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Create Character</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <form>
+            <div class="row">
+                <div class="col-lg-4  mb-3">
+                    <div class="card mb-4">
+                        <div class="card-body text-center">
+                            <img src="/character_image/character_image.png"
+                                 alt="avatar"
+                                 class="rounded-circle img-fluid" id="imageShow"
+                            >
+                            <br>
+                            <br>
+                            <div class="d-flex justify-content-center">
+                                <div class="btn btn-info" style="font-size: 15px">
+                                    <label class="form-label text-white m-1" for="uploadCharacterImage">Choose Image</label>
+                                    <input type="file" class="form-control d-none" id="uploadCharacterImage" name="newAvatar" onchange="chooseFile(this)"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8 mb-3">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="form-outline mb-4">
+                                <input type="text" id="name" class="form-control" maxlength="100" name="name"/>
+                                <label class="form-label" for="name">Name</label>
+                            </div>
+                            <div id="name-message"></div>
+
+                            <div class="form-outline mb-4">
+                                <input type="number" id="age" class="form-control" name="age" min="0" max="999999999" onkeypress="if(this.value.length===9) return false;"/>
+                                <label class="form-label" for="age">Age</label>
+                            </div>
+                            <div id="age-message"></div>
+
+                            <div >
+                                <select class="select form-control mb-4" name="gender" id="gender">
+                                    <option value="Male" selected>Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+
+                            <!-- Name input -->
+                            <div class="form-outline mb-4">
+                                <input type="text" id="role" class="form-control" name="role">
+                                <label class="form-label" for="role">Role</label>
+                            </div>
+
+                            <!-- Email input -->
+                            <div class="form-outline mb-4">
+                                <input type="text" id="ability" class="form-control" name="ability">
+                                <label class="form-label" for="ability">Ability</label>
+                            </div>
+
+                            <div class="form-outline">
+                                <textarea class="form-control" id="story" rows="5"></textarea>
+                                <label class="form-label" for="story">Story</label>
+                            </div>
+
+                            <div class="form-outline mb-4">
+                                <p id="message" style="color: red"></p>
+                            </div>
+                            <!--               Submit button -->
+                            <div class="text-center">
+                                <button onclick="createCharacter()" class="btn btn-info">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<!-- MDB -->
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"
+></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="/js/showFileUpload.js"></script>
+
+
+<!--Xử lý các tác vụ khi mở trang-->
+<script>
+    let worldId = [[${worldId}]]
+
+    $(document).ready(function () {
+    $('#breadcrumb-viewWorld').attr('href', "/world/show/view/"+worldId);
+    $('#breadcrumb-showCharacter').attr('href', "/character/show/"+worldId);
+    });
+</script>
+
+
+<!--Xử lý thêm mới character-->
+<script>
+    // let currentUsername = localStorage.getItem("token");
+    // let currentUser = {};
+
+    function createCharacter(){
+        this.event.preventDefault();
+        let isInfoValid = checkInfoValid();
+        if (!isInfoValid){
+            return;
+        }
+
+
+        let character = {}
+        character.name = $('#name').val();
+        character.age = $('#age').val();
+        character.gender = $('#gender').val();
+        character.role = $('#role').val();
+        character.ability = $('#ability').val();
+        character.story = $('#story').val();
+        character.worldId = worldId;
+
+
+        let characterImage = $('#uploadCharacterImage')[0].files[0]
+        if (characterImage === undefined){
+            characterImage = null;
+        }
+        let formData = new FormData();
+        formData.append('character', new Blob([JSON.stringify(character)], {
+            type: "application/json"
+        }))
+        formData.append("characterImage", characterImage);
+
+
+        $.ajax({
+            type: "POST",
+            url: "http://localhost:8080/api/character/create",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response){
+                $('#message')[0].classList.remove("fade")
+                $('#message')[0].innerHTML = '<p style="color: green">' + response +'</p>'
+                setTimeout(()=>{
+                    $('#message')[0].classList.add("fade")
+                },2000)
+            },
+          })
+
+
+
+    }
+
+    function checkInfoValid(){
+        let isNameValid = true;
+        let isAgeValid = true;
+        let nameMessage = document.getElementById('name-message');
+        let ageMessage = document.getElementById('age-message');
+
+        let name = $('#name').val();
+        if (name === ''){
+            $('#name')[0].classList.add('is-invalid')
+            $('#name-message')[0].innerHTML = '<p style="color: red">' + "Name must be filled out" +'</p>'
+            isNameValid = false;
+        }else if (nameMessage.hasChildNodes()){
+            $('#name')[0].classList.remove('is-invalid')
+            nameMessage.removeChild(nameMessage.firstChild)
+            isNameValid = true;
+        }
+
+        let age = $('#age').val();
+        if (age === ''){
+            $('#age')[0].classList.add('is-invalid')
+            $('#age-message')[0].innerHTML = '<p style="color: red">' + "Age must be filled out" +'</p>'
+            isAgeValid = false;
+        }else if (ageMessage.hasChildNodes()) {
+            $('#age')[0].classList.remove('is-invalid')
+            ageMessage.removeChild(ageMessage.firstChild)
+            isAgeValid = true;
+        }
+
+        if (!isAgeValid || !isNameValid){
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+
+
+</script>
+</body>
+</html>

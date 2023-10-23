@@ -1,0 +1,37 @@
+body{
+    font-family: "Tektur",sans-serif;
+}
+
+.row .card{
+}
+
+.py-5 .breadcrumb-item{
+    font-size: large;
+    font-weight: 600;
+}
+.btn{
+    font-size: medium;
+}
+
+.card-title{
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.rounded-circle{
+    width: 200px;
+    height: 200px;
+    border: 7px solid #ffffff;
+    box-shadow: 2px 2px 10px #919191;
+    object-fit: cover;
+}
+.world-img{
+    border: 7px solid #ffffff;
+    box-shadow: 2px 2px 10px #919191;
+    height: 113px;
+    width: 190px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 20px;
+}
+

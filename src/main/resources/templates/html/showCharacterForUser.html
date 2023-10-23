@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Show Character</title>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css"
+            rel="stylesheet"
+    />
+
+    <link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+
+    <link rel="shortcut icon" type="image/png" href="/image/logo_MultiWorld.png"/>
+
+    <link href="/css/showCharacterForUser.css" rel="stylesheet" type="text/css">
+
+</head>
+<body>
+<section>
+    <div class="container py-5">
+        <div class="row">
+            <div class="col">
+                <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+                    <ol class="breadcrumb mb-0" id="breadcrumb">
+
+
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="row mb-4 d-flex justify-content-end align-items-center">
+            <span class="col-1 pe-0" style="font-weight: 700; font-size: 20px; margin-right: -20px; width: 120px;">Sort by: </span>
+            <div style="width: 108px" class="dropdown col-1 dropdown-tag">
+                <button
+                        class="btn btn-outline-primary btn-rounded dropdown-toggle"
+                        type="button"
+                        data-mdb-toggle="dropdown"
+                        aria-expanded="false"
+                >
+                    Name
+                </button>
+                <ul class="dropdown-menu dropdown-sort " aria-labelledby="dropdownMenuButton">
+                    <li>
+                        <button type="button" class=" btn btn-outline-secondary btn-rounded me-3"
+                                data-mdb-ripple-color="dark" onclick="getAllCharacter('name','asc',currentPage)">ASC
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="btn btn-outline-secondary btn-rounded me-3"
+                                data-mdb-ripple-color="dark" onclick="getAllCharacter('name','desc',currentPage)">DESC
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div style="width: 95px" class="dropdown col-1 dropdown-tag">
+                <button
+                        class="btn btn-outline-primary btn-rounded dropdown-toggle"
+                        type="button"
+                        data-mdb-toggle="dropdown"
+                        aria-expanded="false"
+                >
+                    Age
+                </button>
+                <ul class="dropdown-menu dropdown-sort " aria-labelledby="dropdownMenuButton">
+                    <li>
+                        <button type="button" class=" btn btn-outline-secondary btn-rounded me-3"
+                                data-mdb-ripple-color="dark" onclick="getAllCharacter('age','asc',currentPage)">ASC
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="btn btn-outline-secondary btn-rounded me-3"
+                                data-mdb-ripple-color="dark" onclick="getAllCharacter('age','desc',currentPage)">DESC
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div style="width: 125px" class="dropdown col-1 dropdown-tag">
+                <button
+                        class="btn btn-outline-primary btn-rounded dropdown-toggle"
+                        type="button"
+                        data-mdb-toggle="dropdown"
+                        aria-expanded="false"
+                >
+                    Gender
+                </button>
+                <ul class="dropdown-menu dropdown-sort " aria-labelledby="dropdownMenuButton">
+                    <li>
+                        <button type="button" class=" btn btn-outline-secondary btn-rounded me-3"
+                                data-mdb-ripple-color="dark" onclick="getAllCharacter('gender','asc',currentPage)">ASC
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="btn btn-outline-secondary btn-rounded me-3"
+                                data-mdb-ripple-color="dark" onclick="getAllCharacter('gender','desc',currentPage)">DESC
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div style="width: 125px" class="dropdown col-1 dropdown-tag">
+                <button
+                        class="btn btn-outline-primary btn-rounded dropdown-toggle"
+                        type="button"
+                        data-mdb-toggle="dropdown"
+                        aria-expanded="false"
+                >
+                    Role
+                </button>
+                <ul class="dropdown-menu dropdown-sort " aria-labelledby="dropdownMenuButton">
+                    <li>
+                        <button type="button" class=" btn btn-outline-secondary btn-rounded me-3"
+                                data-mdb-ripple-color="dark" onclick="getAllCharacter('role','asc',currentPage)">ASC
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="btn btn-outline-secondary btn-rounded me-3"
+                                data-mdb-ripple-color="dark" onclick="getAllCharacter('role','desc',currentPage)">DESC
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-3 pe-3" id="worldInfo">
+
+
+            </div>
+
+<!--            <div class="col-lg-9 ps-5" id="characterList">-->
+
+
+<!--            </div>-->
+            <div class="col-lg-9 ps-5" >
+                <div id="characterList">
+
+                </div>
+                <div id="paging">
+
+                </div>
+
+            </div>
+        </div>
+        <br>
+        <br>
+<!--        <div id="paging">-->
+
+<!--        </div>-->
+    </div>
+</section>
+
+
+<!--Confirm Delete Modal-->
+<div class="modal fade" id="confirmDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="exampleModalLabel">Confirm</h5>
+                <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">Do you really want to obliterate this world?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-mdb-dismiss="modal">Nope</button>
+                <button type="button" class="btn btn-danger btn-ok" data-mdb-dismiss="modal">Do it</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Button to top-->
+<button
+        type="button"
+        class="btn btn-info btn-floating btn-lg"
+        id="btn-back-to-top"
+>
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"
+></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="sweetalert2.min.js"></script>
+<link rel="stylesheet" href="sweetalert2.min.css">
+
+<script src="/js/scrollTop.js"></script>
+
+
+<script>
+    let worldId = [[${worldId}]]
+    let currentUsername = localStorage.getItem("token");
+    let currentSort;
+    let currentOrder;
+    let currentPage;
+
+    $(document).ready(function () {
+        getWorldInfo();
+        getAllCharacter("name", "asc", 0);
+    });
+
+    // let currentUsername = localStorage.getItem("token");
+
+
+    function getAllCharacter(sort, order, page) {
+        currentSort = sort;
+        currentOrder = order;
+        currentPage = page;
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/api/character/show/" + worldId + "?sort=" + sort + "&order=" + order + "&page=" + page,
+            success: function (data) {
+                if (data.totalElements === 0) {
+                    $('#characterList')[0].innerHTML = '<h2 style="text-align: center; margin-top: 100px;" class="text-danger">There are no citizens in this world</h2>'
+                } else {
+                    showCharacter(data);
+                    getPaging(data);
+                }
+            }
+        })
+        window.scrollTo(0, 0);
+    }
+
+    function getWorldInfo() {
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/api/world/view/" + worldId,
+            success: function (world) {
+                showWorld(world)
+                setBreadCrumb(world)
+            }
+        })
+    }
+
+    function showWorld(world) {
+
+        let worldInfo = `<div class="card mb-4 sticky-top" style="top: 15%">
+                    <div class="card-body text-center ">
+                        <img src="/world_image/${world.image}" alt=""
+                             class="world-img img-fluid" id="worldImageShow">
+                        <h3 class="my-4" style="font-weight: 700">${world.name}</h3>`
+        if (world.userDTO.username === currentUsername) {
+            worldInfo += `<button onclick="location.href='/character/show/${world.id}/create'" class="btn btn-info mx-3 mini-button">Create Character</button>`
+        }
+        worldInfo += `</div>
+                          </div>`
+        $('#worldInfo')[0].innerHTML = worldInfo;
+    }
+
+    function showCharacter(data) {
+        let list = data.content;
+        let content = '';
+        for (let i = 0; i < list.length; i++) {
+            content += setCharacterInfo(i, list[i]);
+        }
+        $('#characterList')[0].innerHTML = content;
+        let lastLine = document.querySelectorAll(".hr:last-child");
+        lastLine[lastLine.length - 1].remove();
+
+    }
+
+    function setCharacterInfo(ordinalNumber, character) {
+        let content = `<div class="row" id="character-${character.id}">
+          <div class="col-lg-1 mb-5 d-flex justify-content-center align-items-center">
+            <div class="card text-muted" style="max-height: 45%;border-radius: 15px;border: #5588e2 solid 4px;">
+              <div class="card-body d-flex justify-content-center align-items-center" style="padding: 25px 20px 20px;">
+                <h3>${ordinalNumber + 1}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-11 mb-5">
+            <div class="card">
+              <div class="card-body row" style="padding-bottom: 2%; padding-top: 2%">
+                <div class="col-3 d-flex align-items-center" >
+                  <img src="/character_image/${character.image}"
+                       alt="avatar"
+                       class="rounded-circle img-fluid"
+                  >
+                </div>
+                <div class="col-9 characterInfo">
+                  <h4 class="card-title mb-1" style="margin-left: -10%">${character.name}</h4>
+                  <div style="margin-left: -7%;" class="text-muted">
+                    <p class="card-text"  style="margin-bottom: 0">
+                      <span class="titleincard">Age: </span>
+                      ${character.age}
+                    </p>
+                    <p class="card-text" style="margin-bottom: 0">
+                      <span class="titleincard">Gender: </span>
+                      ${character.gender}
+                    </p>
+                    <p class="card-text">
+                      <span class="titleincard">Role: </span>
+                      ${character.role}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer d-flex justify-content-center align-items-center">
+                <button class="btn btn-info mx-5" onclick="location.href='/character/show/'+ worldId +'/view/${character.id}'">View</button>`
+            if(character.world.user.username === currentUsername){
+                content += `<button class="btn btn-success mx-5" onclick="location.href='/character/show/'+ worldId +'/update/${character.id}'">Update</button>
+                <button class="btn btn-danger mx-5" data-mdb-toggle="modal" data-mdb-target="#confirmDelete" data-character-id = "${character.id}">Obliterate</button>`
+            }
+            content +=
+              `</div>
+            </div>
+          </div>
+          <hr class="hr mb-5" style="height: 2.5px;">
+        </div>`
+        return content;
+    }
+</script>
+
+<!--Xử lý thêm paging-->
+<script>
+
+    // Xử lý button paging
+    function getPaging(pageCharacter) {
+        let currentPage = pageCharacter.number + 1;
+        let totalPages = pageCharacter.totalPages;
+        let paging = setPageInfo(pageCharacter);
+
+        $('#paging')[0].innerHTML = paging;
+        $('#currentPage')[0].innerHTML = currentPage;
+        $('#totalPages')[0].innerHTML = totalPages;
+
+        if (pageCharacter.number <= 0) {
+            document.getElementById("preButton").classList.add("disable-button");
+            document.getElementById("preButton").classList.remove("btn", "btn-info");
+            document.getElementById("preButton").setAttribute('disabled', '');
+        }
+        if (pageCharacter.number + 1 >= pageCharacter.totalPages) {
+            document.getElementById("nextButton").classList.add("disable-button");
+            document.getElementById("nextButton").classList.remove("btn", "btn-info");
+            document.getElementById("nextButton").setAttribute('disabled', '');
+        }
+    }
+
+    // Thêm thông tin vào button paging
+    function setPageInfo(pageCharacter) {
+        return `
+<div class="container">
+<div class="d-flex align-items-center justify-content-center">
+       <button class="btn btn-info mx-4" id="preButton"  onclick="getAllCharacter(currentSort,currentOrder,${pageCharacter.number - 1})">Previous</button>
+    <span style="" id="currentPage"></span>   &nbsp&nbsp|&nbsp&nbsp   <span id="totalPages"></span>
+    <button class="btn btn-info mx-4" id="nextButton" onclick="getAllCharacter(currentSort,currentOrder,${pageCharacter.number + 1})">Next</button>
+       </div>
+</div>`
+    }
+</script>
+
+
+<!--Tổng hợp script xử lý trường hợp xóa character-->
+<!--Script xử lý gán id cho button-->
+<script>
+    $('#confirmDelete').on('show.bs.modal', function (e) {
+        let data = $(e.relatedTarget).data();
+        $('.btn-ok', this).data('characterId', data.characterId);
+    });
+</script>
+
+
+<!--Script xử lý việc xóa Character và hiện thông báo thành công-->
+<script>
+    $('#confirmDelete').on('click', '.btn-ok', function () {
+        let characterId = $(this).data('characterId');
+        $.ajax({
+            type: "DELETE",
+            url: "http://localhost:8080/api/character/delete/" + characterId,
+            success: function () {
+                alert();
+                disappearCharacter(characterId);
+            }
+        })
+    });
+</script>
+
+<!--Xử lý disappear Character-->
+<script>
+    function disappearCharacter(characterId){
+        let target = document.getElementById('character-'+characterId)
+        target.classList.add('character-disappear','disabled')
+    }
+</script>
+
+
+<!--Thông báo delete Character-->
+<script>
+    function alert() {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        Toast.fire({
+            icon: 'error',
+            title: 'An character has been disappeared from the world'
+        })
+    }
+</script>
+
+<!--Xử lý xóa breadcrumb-->
+<script>
+    function setBreadCrumb(world) {
+        let breadcrumbForCurrentUser = `<li class="breadcrumb-item"><a href="/home">Home</a></li>
+        <li class="breadcrumb-item"><a href="/world/show">Show World</a></li>
+        <li class="breadcrumb-item"><a href="/world/show/view/${worldId}">View World</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Show Character</li>`
+
+        let breadcrumbForOtherUser = `
+        <li class="breadcrumb-item"><a href="/home">Home</a></li>
+        <li class="breadcrumb-item"><a href="/user/profile/${world.userDTO.id}">Wibu's Profile</a></li>
+        <li class="breadcrumb-item"><a href="/world/show/view/${worldId}">View World</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Show Character</li>
+        `
+        if (world.userDTO.username === currentUsername) {
+            $('#breadcrumb')[0].innerHTML = breadcrumbForCurrentUser;
+        } else {
+            $('#breadcrumb')[0].innerHTML = breadcrumbForOtherUser;
+        }
+
+    }
+
+
+</script>
+</body>
+</html>

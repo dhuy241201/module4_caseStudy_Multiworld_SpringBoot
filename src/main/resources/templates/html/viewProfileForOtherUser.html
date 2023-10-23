@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User Profile</title>
+  <!-- Font Awesome -->
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+          rel="stylesheet"
+  />
+  <!-- Google Fonts -->
+  <link
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          rel="stylesheet"
+  />
+  <!-- MDB -->
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css"
+          rel="stylesheet"
+  />
+
+  <link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="shortcut icon" type="image/png" href="/image/logo_MultiWorld.png"/>
+
+  <link href="/css/viewProfileForOtherUsers.css" rel="stylesheet" type="text/css">
+</head>
+<body style="background-color: #efefef;">
+<section >
+  <div class="container py-5">
+    <div class="row">
+      <div class="col">
+        <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item" style="color: #54b4d3"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-3 pe-4" id="userInfo">
+
+
+
+      </div>
+      <div class="col-lg-9 ps-4">
+        <div class="card mb-4">
+          <div class="card-body">
+            <p class="mb-0 text-primary" style="font-size: 25px;font-weight: 700;">All World List</p>
+          </div>
+        </div>
+        <div id="worldList">
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+<!-- MDB -->
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"
+></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    getUserInformation();
+  });
+</script>
+
+
+<script defer>
+  let userId = [[${userId}]]
+
+  function getUserInformation(){
+    $.ajax({
+      type: "GET",
+      url: "http://localhost:8080/api/user/profile/other/"+userId,
+      success: function (user){
+        worlds = user.worlds;
+        setUserInfo(user);
+        setWorldsInfo(worlds);
+      }
+    })
+  }
+
+  function setUserInfo(user){
+    content = `<div class="card mb-4 sticky-top" style="top: 17%">
+          <div class="card-body text-center">
+            <img id="avatar" src="/avatar/${user.avatar}" alt="avatar"
+                 class="rounded-circle img-fluid">
+            <h5 class="mt-4 mb-2" id="largeName" style="font-weight: 600">${user.name}</h5>
+            <h6 class="" id="role">${user.role}</h6>
+          </div>
+        </div>`
+    $('#userInfo')[0].innerHTML = content;
+  }
+</script>
+
+
+
+
+<!--Xử lý lấy tất cả world của User-->
+<script>
+
+
+
+  function setWorldsInfo(worlds){
+    let content = ``;
+    for (let i=0; i<worlds.length; i++){
+      content += setOneWorldInfo(worlds[i]);
+    }
+    $('#worldList')[0].innerHTML = content;
+  }
+
+  function setOneWorldInfo(world){
+    return `
+    <div class="card mb-4">
+            <div class="card-body row d-flex justify-content-center align-items-center">
+              <div class="text-center col-3">
+                <img src="/world_image/${world.image}" alt=""
+                     class="world-img img-fluid">
+                <br>
+              </div>
+              <div class="col-7">
+                <h4 class="card-title mb-2">${world.name}</h4>
+              </div>
+              <div class="col-2">
+                <div class="d-flex justify-content-center align-items-center">
+                  <button class="btn btn-info mx-1" onclick="location.href='/world/show/view/${world.id}'">View</button>
+                </div>
+              </div>
+            </div>
+          </div>
+    `
+  }
+</script>
+
+</body>
+</html>

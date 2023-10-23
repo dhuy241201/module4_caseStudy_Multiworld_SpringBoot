@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User Profile</title>
+  <!-- Font Awesome -->
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+          rel="stylesheet"
+  />
+  <!-- Google Fonts -->
+  <link
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+          rel="stylesheet"
+  />
+  <!-- MDB -->
+  <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.css"
+          rel="stylesheet"
+  />
+
+  <link href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="shortcut icon" type="image/png" href="/image/logo_MultiWorld.png"/>
+
+  <link href="/css/profile.css" rel="stylesheet" type="text/css">
+</head>
+<body style="background-color: #efefef;">
+<section >
+  <div class="container py-5">
+    <div class="row">
+      <div class="col">
+        <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item" style="color: #54b4d3"><a href="/home">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body text-center">
+            <img id="avatar" src="/image/" alt="avatar"
+                 class="rounded-circle img-fluid">
+            <h5 class="my-3" id="largeName"></h5>
+            <!--                        <p class="text-muted mb-1">Full Stack Developer</p>-->
+            <!--                        <p class="text-muted mb-4">Bay Area, San Francisco, CA</p>-->
+            <!--                        <div class="d-flex justify-content-center mb-2">-->
+            <a href="/user/update" class="btn btn-info">Update</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Username</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0" id="username"></p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Password</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0" id="password"></p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Name</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0" id="name"></p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Email</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0" id="email"></p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Role</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0" id="role"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+
+<!-- MDB -->
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"
+></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script defer>
+  let currentUsername = localStorage.getItem("token");
+  let currentUser = {}
+
+  getUserInformation(displayData);
+
+
+  function getUserInformation(callback){
+    $.ajax({
+        type: "GET",
+        url: "http://localhost:8080/api/user/profile/"+currentUsername,
+        contentType: "application/json",
+        success: function (data){
+          currentUser = data;
+          callback(currentUser)
+        }
+      })
+  }
+
+  function displayData(currentUser){
+  $('#username').html(currentUser.username);
+  $('#password').html(currentUser.password);
+  $('#name').html(currentUser.name);
+  $('#email').html(currentUser.email);
+  $('#role').html(currentUser.role);
+  $('#largeName').html(currentUser.name);
+  $('#avatar').attr("src","/avatar/"+currentUser.avatar)
+  }
+
+
+</script>
+
+</body>
+</html>
